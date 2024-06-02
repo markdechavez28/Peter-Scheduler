@@ -144,12 +144,11 @@
                           '</div>' +
                       '</div>';
               }
-              processHtml += '</div>'; // Close the row
+              processHtml += '</div>';
               processesDiv.append(processHtml);
           }
       }
 
-      // Initialize the form with the correct fields
       var selectedAlgorithm = $('#algorithm').val();
       updateProcessFields(selectedAlgorithm);
   });
