@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>CPU Scheduling Algorithms</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin-top: 20px;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding-top: 20px;
+        }
+        .header {
+            background: #519872;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .submit-btn {
+            background: #A4B494;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease-in-out;
+        }
+        .submit-btn:hover {
+            background: #0056b3;
+        }
+        .row {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Peter Scheduler</h1>
+        <p>Explore and analyze the efficiency of diverse CPU scheduling algorithms <br> through this interactive web application.</p>
+    </div>
+    <form method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="algorithm">Select Algorithm</label>
+                    <select class="form-control" id="algorithm" name="algorithm" required>
+                        <option value="fcfs">First-Come-First-Serve</option>
+                        <option value="sjf">Shortest-Job-First</option>
+                        <option value="strf">Shortest-Remaining-Time-First</option>
+                        <option value="round_robin">Round Robin</option>
+                        <option value="priority_non_preemptive">Priority (Non-Preemptive)</option>
+                        <option value="priority_preemptive">Priority (Preemptive)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="num_processes">Number of Processes</label>
+                    <input type="number" class="form-control" id="num_processes" name="num_processes" required>
+                </div>
+            </div>
+            <div class="col-md-6" id="time_quantum_div" style="display:none;">
+                <div class="form-group">
+                    <label for="time_quantum">Time Quantum</label>
+                    <input type="number" class="form-control" id="time_quantum" name="time_quantum">
+                </div>
+            </div>
+        </div>
+        <div id="processes"></div>
+        <div class="text-center mt-4">
+            <button type="submit" class="submit-btn">Calculate</button>
+        </div>
+    </form>
+    {% if error %}
+    <div class="alert alert-danger mt-3" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+    {% if results %}
+    <div class="result-item mt-5">
+        <h3>Results</h3>
+        <p>Average Turnaround Time: {{ results.average_turnaround_time }}</p>
+        <p>Average Waiting Time: {{ results.average_waiting_time }}</p>
+    </div>
+    {% endif %}
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script>
+  $(document).ready(function(){
+      $('#algorithm').change(function(){
+          var selectedAlgorithm = $(this).val();
+          if (selectedAlgorithm === 'round_robin') {
+              $('#time_quantum_div').show();
+          } else {
+              $('#time_quantum_div').hide();
+          }
+          updateProcessFields(selectedAlgorithm);
+      });
+
+      $('#num_processes').change(function(){
+          var selectedAlgorithm = $('#algorithm').val();
+          updateProcessFields(selectedAlgorithm);
+      });
+
+      function updateProcessFields(selectedAlgorithm) {
+          var numProcesses = $('#num_processes').val();
+          var processesDiv = $('#processes');
+          processesDiv.empty();
+          for (var i = 1; i <= numProcesses; i++) {
+              var processHtml = '<div class="row">';
+              processHtml += 
+                  '<div class="col-md-6">' +
+                      '<div class="form-group">' +
+                          '<label for="burst_time_' + i + '">Burst Time for Process ' + i + '</label>' +
+                          '<input type="number" class="form-control" id="burst_time_' + i + '" name="burst_time_' + i + '" required>' +
+                      '</div>' +
+                  '</div>' +
+                  '<div class="col-md-6">' +
+                      '<div class="form-group">' +
+                          '<label for="arrival_time_' + i + '">Arrival Time for Process ' + i + '</label>' +
+                          '<input type="number" class="form-control" id="arrival_time_' + i + '" name="arrival_time_' + i + '" required>' +
+                      '</div>' +
+                  '</div>';
+              if (selectedAlgorithm === 'priority_non_preemptive' || selectedAlgorithm === 'priority_preemptive') {
+                  processHtml +=
+                      '<div class="col-md-6">' +
+                          '<div class="form-group">' +
+                              '<label for="priority_' + i + '">Priority for Process ' + i + '</label>' +
+                              '<input type="number" class="form-control" id="priority_' + i + '" name="priority_' + i + '" required>' +
+                          '</div>' +
+                      '</div>';
+              }
+              processHtml += '</div>'; // Close the row
+              processesDiv.append(processHtml);
+          }
+      }
+
+      // Initialize the form with the correct fields
+      var selectedAlgorithm = $('#algorithm').val();
+      updateProcessFields(selectedAlgorithm);
+  });
+</script>
+
+</body>
+</html>
